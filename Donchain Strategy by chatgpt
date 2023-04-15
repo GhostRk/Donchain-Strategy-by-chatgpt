@@ -1,0 +1,23 @@
+//@version=5
+strategy("Donchian Channel Strategy", overlay=true)
+
+// Input parameters
+lookback = input.int(title="Lookback Period", defval=20)
+upper_band = ta.highest(high, lookback)
+lower_band = ta.lowest(low, lookback)
+
+// Plot the Donchian channels
+plot(upper_band, color=color.green, linewidth=2)
+plot(lower_band, color=color.red, linewidth=2)
+
+// Enter long if the current price crosses above the upper band
+long_condition = ta.cross(close, upper_band)
+strategy.entry("Long", strategy.long, when=long_condition)
+
+// Enter short if the current price crosses below the lower band
+short_condition = ta.cross(lower_band, close)
+strategy.entry("Short", strategy.short, when=short_condition)
+
+// Exit all positions if the price crosses back inside the channels
+exit_condition = (ta.cross(upper_band, close) or ta.cross(close, lower_band))
+strategy.close_all(when=exit_condition)
